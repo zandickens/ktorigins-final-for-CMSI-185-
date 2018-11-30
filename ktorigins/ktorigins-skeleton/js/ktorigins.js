@@ -54,7 +54,11 @@ let lobbyCont  = document.querySelector("#lobby-container"),
       "X...X...X...X",
       "X...........X",
       "XZ....X....ZX",
-      "XXXXXXXXXXXXX"
+      "XXXXXXXXXXXXX" 
+	/*  "XXXX",
+	  "X.PX",
+	  "XZ.X",
+	  "XXXX" */
     ],
     // Size of each cell rendered by p5; shrink to make
     // larger maps fit on the screen!
@@ -312,17 +316,17 @@ class Player extends Ktahbject{
     // TODO reduce this player's health property by the amount
     // decided in the game instance's playerDamage property
     // ???
-
+	this.health -= this.game.playerDamage;
     // TODO update the health bar with the percentage of the player's
     // remaining health, out of a maximum 100
     // [!] updateHealth(percentage)
     // ???
-
+	updateHealth(this.health/100);
     // TODO if the player's health is <= 0, then have the game end
     // in defeat
-    // if (???) {
-    //   [!] See Game class methods for how to end the game!
-    // }
+    if (this.health <= 0) {
+       this.game.end();
+     }
   }
 
   /*
@@ -405,6 +409,7 @@ class Zombie extends Ktahbject {
       // and then return from this function
       // [!] this.game.eraseAt
       // ???
+	  this.game.eraseAT(this,this.r,this.c)
     }
 
     let r = this.r,
@@ -418,13 +423,17 @@ class Zombie extends Ktahbject {
 
     // TODO Satisfy act requirement #2: check if the Player is
     // in any of the adjacent cells to the Zombie, and if so,
-    // have the Player get eaten and *return* from this function
+    // have the Player get eaten and *return* from this function 
     // immediately after
     // [!] this.game.player
     // [!] this.game.player.getEaten
     // [!] activeP5.dist  // p5's dist method!
+	let playerRow = this.game.player.r,
+		playerCol = this.game.player.c;
     // ??? (this will be an if statement with stuff inside)
-
+	if(activeP5.dist(playerRow,playerCol,this.r,this.c) < 1.1){
+		this.game.player.getEaten();
+	}
     // TODO Satisfy act requirement #3: move the Zombie. If we
     // reach here, then we know the Player is not adjacent to the
     // Zombie, and it is still alive, so move it to the location
