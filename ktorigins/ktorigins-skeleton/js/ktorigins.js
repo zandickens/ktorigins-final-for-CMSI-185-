@@ -55,7 +55,7 @@ let lobbyCont  = document.querySelector("#lobby-container"),
       "X...........X",
       "XZ....X....ZX",
       "XXXXXXXXXXXXX" 
-	/*  "XXXX",
+	/*"XXXX",
 	  "X.PX",
 	  "XZ.X",
 	  "XXXX" */
@@ -240,23 +240,7 @@ class Ktahbject {
    * to the one at the given row and col
    */
   moveTo (row, col) {
-    // TODO Create a variable called target that gets the
-    // object(s) at the requested row, col
-    // [!] see Game's getKtahbjectsAt method
-    // let target = ???;
 	let target = this.game.getKtahbjectsAt(row,col);
-	console.log(target[0]);
-    // TODO set a property called facing on this object
-    // that is an object with 2 properties: r and c
-    // This property represents which way the moved
-    // ktahbject is facing. For example, if it just moved
-    // left, then this.facing = {r: 0, c: -1}; if it just
-    // moved up, then this.facing = {r: -1, c: 0}, etc.
-    // this.facing = {r: ???, c: ???};
-    //
-    // We'll use the facing property when a player uses
-    // their ability, and that ability must occur in a given
-    // direction compared to where they're facing
 	if(this.r < row){
 		this.facing={r:1,c:0};
 	}
@@ -344,17 +328,17 @@ class Player extends Ktahbject{
 
           // TODO if there's nothing in objsAtLoc, then it's clear and
           // ready to have a wall placed in it!
-          // if ( ??? )
+          if (objsAtLoc.length === 0){
             // TODO create a new Wall object at the given wallLoc
             // let newWall = new Wall( ??? );
-
+			let newWall = new Wall(wallLoc.r,wallLoc.c,this.game,false);
             // TODO add the newWall to the game's ktahbjects:
             // [!] this.game.ktahbjects
             // ???
-
+			this.game.addAt(newWall,wallLoc.r,wallLoc.c);
             // Uncomment, then leave this line as-is:
-            // triggerCooldown = true;
-          // }
+            triggerCooldown = true;
+          }
           break;
       }
     }
@@ -367,9 +351,8 @@ class Player extends Ktahbject{
    */
   act () {
     // TODO simple: set this Player's cooldown to
-    // the max of 0 and this.cooldown - 1
-    // [!] Math.max
-    // this.cooldown = ???;
+	//Math.max(this.cooldown,0);
+    //this.cooldown--;
   }
 }
 
@@ -379,36 +362,13 @@ class Player extends Ktahbject{
 // The Ktahmbies themselves! All state related to each
 // Zombie in the game will be templated here
 // ---------------------------------------------------
-
-// TODO Change the Zombie class definition to inherit from Ktahbject
 class Zombie extends Ktahbject {
   constructor (r, c, game) {
-    // TODO Since Zombie is a subclass of Ktahbject, call the superclass'
-    // constructor with the same parameters here:
-    // ???
 	super(r,c,game);
-
-    // Leave this line as-is:
     this.asset = "zombie";
   }
-
-  /*
-   * A Zombie acts at every tick, performing the following:
-   * 1) Ensure that the zombie is removed if its health is <= 0
-   * 2) Checks if a player is adjacent to them, if so, the
-   *    player will take damage
-   * 3) If the player is NOT adjacent, the Zombie moves in
-   *    a random direction: up, down, left, or right; if the
-   *    direction chosen is blocked (by a wall or zombie),
-   *    then this Zombie does nothing for this tick
-   */
   act () {
     if (this.health <= 0) {
-      // TODO Satisfy act requirement #1:
-      // If this Zombie is dead, then remove it from the game,
-      // and then return from this function
-      // [!] this.game.eraseAt
-      // ???
 	  this.game.eraseAT(this,this.r,this.c)
     }
 
@@ -420,26 +380,11 @@ class Zombie extends Ktahbject {
         chosenDir = dirs[Math.floor(Math.random()*4)],
         // Provides a row, col coordinate of the desired location to move
         toMoveTo = {r: r + chosenDir.r, c: c + chosenDir.c};
-
-    // TODO Satisfy act requirement #2: check if the Player is
-    // in any of the adjacent cells to the Zombie, and if so,
-    // have the Player get eaten and *return* from this function 
-    // immediately after
-    // [!] this.game.player
-    // [!] this.game.player.getEaten
-    // [!] activeP5.dist  // p5's dist method!
 	let playerRow = this.game.player.r,
 		playerCol = this.game.player.c;
-    // ??? (this will be an if statement with stuff inside)
 	if(activeP5.dist(playerRow,playerCol,this.r,this.c) < 1.1){
 		this.game.player.getEaten();
 	}
-    // TODO Satisfy act requirement #3: move the Zombie. If we
-    // reach here, then we know the Player is not adjacent to the
-    // Zombie, and it is still alive, so move it to the location
-    // we made in toMoveTo above
-    // [!] this.moveTo
-    // ???
 	this.moveTo(toMoveTo.r,toMoveTo.c);
   }
 }
@@ -450,45 +395,22 @@ class Zombie extends Ktahbject {
 // Used to model the game's boundaries and impassable
 // barriers... can also be used for Architect's walls!
 // ---------------------------------------------------
-
-// TODO Change the Wall class definition to inherit from Ktahbject
 class Wall extends Ktahbject{
-  // [!] Below, permanent is an *optional* parameter, meaning
-  // that it will have the value given (true) if the user does
-  // not specify it, otherwise, it attains the value of an
-  // entered argument; use this parameter to distinguish permanent
-  // walls from those constructed by the Architect
   constructor (r, c, game, permanent = true) {
-    // TODO Since Wall extends Ktahbject, call the superclass'
-    // constructor with the same parameters here:
-    // ???
 	super(r,c,game);
-
-    // TODO: If the wall is NOT permanent (i.e., was made
-    // by the architect) set its health to 5 here
-    // ???
-
-    // Leave these lines as-is:
     this.asset = "wall";
     this.permanent = permanent;
+	if(!this.permanent){
+		this.health = 5;
+	}
   }
-
-  /*
-   * Walls "act" by losing 1 health every tick IF
-   * they are not permanent. This allows us to make
-   * temporary ones via the Architect. Kill the wall
-   * if its health is <= 0
-   */
   act () {
-    // TODO remove 1 health from this wall IF it is
-    // not permanent
-    // ???
-
-    // TODO if this wall's health is <= 0, then remove
-    // it from the game
-    // if ( ??? ) {
-      // [!] this.game.eraseAt
-    // }
+	if(!this.permanent){
+		this.health--;
+	}
+    if ( this.health <=0 ) {
+      this.game.eraseAt(this,this.r,this.c);
+    }
   }
 }
 
@@ -692,7 +614,16 @@ class Game {
       // around the map -- the shock factor that only
       // K'tah! can deliver
       // [!] this.addAt
-      // ???
+	  for(let i =0; i < this.nZoms;i++){
+		  let randRow = Math.floor(Math.random()*6 + 2),
+			  randCol = Math.floor(Math.random()*10 + 2);
+			  
+		  if(this.getKtahbjectsAt(randRow,randCol).length === 0){
+			this.zombie = new Zombie(randRow,randCol,this);
+			this.addAt(this.zombie,this.zombie.r,this.zombie.c);
+		  }
+		  else{i--}
+	  }
     }, 3000);
   }
 
