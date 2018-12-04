@@ -350,9 +350,9 @@ class Player extends Ktahbject{
    * 1, but to a min of 0
    */
   act () {
-    // TODO simple: set this Player's cooldown to
-	//Math.max(this.cooldown,0);
-    //this.cooldown--;
+	if(this.cooldown > 0){
+		this.cooldown--;
+	}
   }
 }
 
