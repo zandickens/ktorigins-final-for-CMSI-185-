@@ -32,9 +32,16 @@ let lobbyCont  = document.querySelector("#lobby-container"),
     // sounds, etc.
     assets = {
       images: {
-        architect: "./assets/images/architect.png",
+        architect: "./assets/images/jonesy.png",
         zombie: "./assets/images/zombie.png",
-        wall: "./assets/images/wall.png"
+        wall: "./assets/images/wall.png",
+		wall2: "./assets/images/wall2.png",
+		creeper: "./assets/images/creeper.png",
+		steve: "./assets/images/steve.png",
+		fortnitewall:"./assets/images/fortnitewall.png",
+		jonesy: "./assets/images/jonesy.png",
+		yenrof: "./assets/images/yenrof.png",
+		fortzomb: "./assets/images/fortnitezombie.png"
       }
     },
 
@@ -365,7 +372,7 @@ class Player extends Ktahbject{
 class Zombie extends Ktahbject {
   constructor (r, c, game) {
 	super(r,c,game);
-    this.asset = "zombie";
+    this.asset = "fortzomb";
   }
   act () {
     if (this.health <= 0) {
@@ -398,7 +405,7 @@ class Zombie extends Ktahbject {
 class Wall extends Ktahbject{
   constructor (r, c, game, permanent = true) {
 	super(r,c,game);
-    this.asset = "wall";
+    this.asset = "fortnitewall";
     this.permanent = permanent;
 	if(!this.permanent){
 		this.health = 5;
